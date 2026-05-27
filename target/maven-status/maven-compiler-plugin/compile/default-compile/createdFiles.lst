@@ -1,0 +1,3 @@
+demo\DemoSchemaImpl.class
+META-INF\services\org.infinispan.protostream.SerializationContextInitializer
+demo\Person$___Marshaller_c4420876559dde4a4979d7936dfef98d8b35f72b81451dc0410906943be1fbb5.class

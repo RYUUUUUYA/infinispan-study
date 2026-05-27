@@ -1,0 +1,98 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>demo</groupId>
+  <artifactId>infinispan-demo</artifactId>
+  <version>1.0</version>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <!-- Infinispan 本体 -->
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+      <version>15.0.10.Final</version>
+    </dependency>
+
+    <!-- Infinispan API（@Indexed, @Basic アノテーション用）-->
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-api</artifactId>
+      <version>15.0.10.Final</version>
+    </dependency>
+
+    <!-- Infinispan 検索機能（Ickleクエリ用）-->
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-query</artifactId>
+      <version>15.0.10.Final</version>
+    </dependency>
+
+    <!-- ProtoStream（シリアライズ用）-->
+    <dependency>
+      <groupId>org.infinispan.protostream</groupId>
+      <artifactId>protostream</artifactId>
+      <version>5.0.9.Final</version>
+    </dependency>
+
+    <!-- ProtoStream プロセッサ（DemoSchemaImpl 自動生成用）-->
+    <dependency>
+      <groupId>org.infinispan.protostream</groupId>
+      <artifactId>protostream-processor</artifactId>
+      <version>5.0.9.Final</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- JUnit 5（テスト用）-->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- コンパイラ設定（ProtoStream の自動生成を有効にする）-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.infinispan.protostream</groupId>
+              <artifactId>protostream-processor</artifactId>
+              <version>5.0.9.Final</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+
+      <!-- 自動生成コードをEclipseに認識させる -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-sources/annotations</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -8,6 +8,15 @@ Infinispan の学習・検証用リポジトリです。
 * Eclipse
 * Maven
 
+##Infinispan構成
+
+本プロジェクトでは Infinispan を Embedded Mode で利用しています。
+
+そのため、Infinispan Server や Docker コンテナの構築は不要です。
+Maven依存関係を追加し、infinispan.xml に設定を記述するだけで利用できます。
+
+データはアプリケーション内のメモリ上で管理されます
+
 ## セットアップ / 実行方法
 
 1. Eclipse にプロジェクトを Import

@@ -1,3 +1,8 @@
+demo\Person.class
+META-INF\MANIFEST.MF
+demo\DemoSchema.class
 demo\DemoSchemaImpl.class
+META-INF\maven\demo\infinispan-demo\pom.properties
 META-INF\services\org.infinispan.protostream.SerializationContextInitializer
+META-INF\maven\demo\infinispan-demo\pom.xml
 demo\Person$___Marshaller_c4420876559dde4a4979d7936dfef98d8b35f72b81451dc0410906943be1fbb5.class

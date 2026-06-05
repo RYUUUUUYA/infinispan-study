@@ -1,0 +1,44 @@
+<infinispan>
+  <jgroups>
+    <stack name="tcp-local" extends="tcp">
+      <TCPPING initial_hosts="infinispan-node1[7800],infinispan-node2[7800],infinispan-node3[7800]"
+               stack.combine="REPLACE" stack.position="MPING"/>
+    </stack>
+  </jgroups>
+
+  <cache-container name="default" statistics="true">
+    <transport cluster="infinispan-cluster" stack="tcp-local"/>
+
+    <!-- 分散キャッシュ: 各エントリを2ノードに保持 -->
+    <distributed-cache name="distCache" mode="SYNC" owners="2" statistics="true"/>
+  </cache-container>
+
+  <server>
+    <interfaces>
+      <interface name="public">
+        <inet-address value="${infinispan.bind.address:0.0.0.0}"/>
+      </interface>
+    </interfaces>
+    <socket-bindings default-interface="public" port-offset="0">
+      <socket-binding name="default" port="11222"/>
+      <socket-binding name="clustering" port="7800"/>
+    </socket-bindings>
+    <security>
+      <credential-stores/>
+      <security-realms>
+        <security-realm name="default">
+          <properties-realm groups-attribute="Roles">
+            <user-properties path="users.properties" relative-to="infinispan.server.config.path"/>
+            <group-properties path="groups.properties" relative-to="infinispan.server.config.path"/>
+          </properties-realm>
+        </security-realm>
+      </security-realms>
+    </security>
+    <endpoints>
+<endpoint socket-binding="default" security-realm="default">
+  <rest-connector>
+    <authentication mechanisms="BASIC"/>
+  </rest-connector>
+</endpoint>    </endpoints>
+  </server>
+</infinispan>

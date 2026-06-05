@@ -1,0 +1,50 @@
+
+services:
+  infinispan-node1:
+    image: quay.io/infinispan/server:15.0
+    container_name: infinispan-node1
+    environment:
+      - USER=admin
+      - PASS=admin123
+    ports:
+      - "11222:11222"
+    volumes:
+      - ./infinispan-config.xml:/opt/infinispan/server/conf/infinispan.xml
+    networks:
+      ispn-net:
+        aliases:
+          - infinispan-node1
+
+  infinispan-node2:
+    image: quay.io/infinispan/server:15.0
+    container_name: infinispan-node2
+    environment:
+      - USER=admin
+      - PASS=admin123
+    ports:
+      - "11223:11222"
+    volumes:
+      - ./infinispan-config.xml:/opt/infinispan/server/conf/infinispan.xml
+    networks:
+      ispn-net:
+        aliases:
+          - infinispan-node2
+
+  infinispan-node3:
+    image: quay.io/infinispan/server:15.0
+    container_name: infinispan-node3
+    environment:
+      - USER=admin
+      - PASS=admin123
+    ports:
+      - "11224:11222"
+    volumes:
+      - ./infinispan-config.xml:/opt/infinispan/server/conf/infinispan.xml
+    networks:
+      ispn-net:
+        aliases:
+          - infinispan-node3
+
+networks:
+  ispn-net:
+    driver: bridge

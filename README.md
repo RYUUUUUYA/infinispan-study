@@ -171,6 +171,51 @@ docker-compose up -d
 - [ ] ノード再参加時の再分散確認
 
 
+## 各ファイルの説明
+
+Docker container　を使って infinispan で複数のノードを作り、データを分散させる処理の作成。
+
+ファイルの説明
+
+1.docker-compose.yml
+Dockerで複数のコンテナをまとめて管理するための設定ファイル
+・Infinispanサーバーを3つ起動（node1〜node3）
+・それぞれに外からアクセスできるポートを割り当て（11222〜11224）
+・3つのコンテナを同じ仮想ネットワーク（ispn-net）に接続
+├── localhost:11222 → infinispan-node1
+├── localhost:11223 → infinispan-node2
+└── localhost:11224 → infinispan-node3
+
+2.infinispan-config.xml
+「Infinispanをどう動かすか」を定義するファイル
+・TCPPING という方式で「node1・node2・node3 の7800番ポートを見に行け」と固定で指定しています。
+・キャッシュの設定
+
+3.test/test_distribution.sh
+「分散が正しく動いているか確認する」テストスクリプト
+
+キャッシュ作成 → distCache を3ノードに作る
+データ投入 → node1 経由で key-1〜key-10 を書く
+統計取得 → 各ノードが何件持っているか確認
+フェイルオーバー → node1停止後もデータが取れるか（手動確認の案内）
+
+
+コマンドの説明
+
+１.docker-compose up -d
+クラスターを起動するコマンドです。
+up → docker-compose.yml に書いた全コンテナを起動
+-d → バックグラウンドで起動（ターミナルを占有しない）
+
+２. docker-compose down
+クラスターを完全に停止・削除するコマンドです。
+・設定ファイルを変更したあとに再起動する際は down → up -d の順で実行します。単に停止だけしたい場合は docker-compose stop で代用できます。
+
+３. bash test/test_distribution.sh
+作成したテストスクリプトを実行するコマンドです。
+
+
+
 
 以下は DistributedDemoTest の説明
 

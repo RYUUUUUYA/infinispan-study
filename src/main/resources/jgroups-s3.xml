@@ -1,0 +1,20 @@
+<config xmlns="urn:org:jgroups"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:org:jgroups http://www.jgroups.org/schema/jgroups.xsd">
+    <TCP bind_addr="${jgroups.bind.address:0.0.0.0}"
+         bind_port="${jgroups.bind.port:7800}"/>
+    <aws.S3_PING
+        region_name="${jgroups.aws.s3.region_name}"
+        bucket_name="${jgroups.aws.s3.bucket_name}"
+        bucket_prefix="${jgroups.aws.s3.bucket_prefix:infinispan-demo}"/>
+    <MERGE3/>
+    <FD_SOCK2/>
+    <FD_ALL3 timeout="9000" interval="3000"/>
+    <VERIFY_SUSPECT2 timeout="1500"/>
+    <pbcast.NAKACK2 use_mcast_xmit="false"/>
+    <UNICAST3/>
+    <pbcast.STABLE desired_avg_gossip="5000" max_bytes="1M"/>
+    <pbcast.GMS print_local_addr="true" join_timeout="3000"/>
+    <MFC max_credits="2M" min_threshold="0.4"/>
+    <FRAG4 frag_size="60K"/>
+</config>

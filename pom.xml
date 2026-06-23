@@ -1,48 +1,73 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>demo</groupId>
   <artifactId>infinispan-demo</artifactId>
   <version>1.0</version>
+  <packaging>jar</packaging>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.7</version>
+    <relativePath/>
+  </parent>
 
   <properties>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <java.version>17</java.version>
+    <infinispan.version>15.0.10.Final</infinispan.version>
+    <protostream.version>5.0.9.Final</protostream.version>
+    <jgroups.aws.version>3.0.1.Final</jgroups.aws.version>
   </properties>
 
   <dependencies>
+    <!-- Spring Boot Web API -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
     <!-- Infinispan 本体 -->
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
-      <version>15.0.10.Final</version>
+      <version>${infinispan.version}</version>
+    </dependency>
+
+    <!-- JGroups S3 Ping for ECS cluster discovery -->
+    <dependency>
+      <groupId>org.jgroups.aws</groupId>
+      <artifactId>jgroups-aws</artifactId>
+      <version>${jgroups.aws.version}</version>
     </dependency>
 
     <!-- Infinispan API（@Indexed, @Basic アノテーション用）-->
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-api</artifactId>
-      <version>15.0.10.Final</version>
+      <version>${infinispan.version}</version>
     </dependency>
 
     <!-- Infinispan 検索機能（Ickleクエリ用）-->
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-query</artifactId>
-      <version>15.0.10.Final</version>
+      <version>${infinispan.version}</version>
     </dependency>
 
     <!-- ProtoStream（シリアライズ用）-->
     <dependency>
       <groupId>org.infinispan.protostream</groupId>
       <artifactId>protostream</artifactId>
-      <version>5.0.9.Final</version>
+      <version>${protostream.version}</version>
     </dependency>
 
     <!-- ProtoStream プロセッサ（DemoSchemaImpl 自動生成用）-->
     <dependency>
       <groupId>org.infinispan.protostream</groupId>
       <artifactId>protostream-processor</artifactId>
-      <version>5.0.9.Final</version>
+      <version>${protostream.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -67,10 +92,15 @@
             <path>
               <groupId>org.infinispan.protostream</groupId>
               <artifactId>protostream-processor</artifactId>
-              <version>5.0.9.Final</version>
+              <version>${protostream.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
       <!-- 自動生成コードをEclipseに認識させる -->

@@ -12,8 +12,6 @@
 ## 1. ALB の URL を設定する
 
 ```bash
-export AWS_PROFILE=jurabi-sandbox
-export AWS_REGION=ap-northeast-1
 export ALB_BASE_URL='http://<ALBのDNS名>:9000'
 ```
 

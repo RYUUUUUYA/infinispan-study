@@ -1,0 +1,20 @@
+進展 20260709
+
+・ECSタスクを二つ起動した後、手順1〜3までは成功
+・ALB経由でアプリにアクセスできることを確認
+・/health で status: UP、CacheA / CacheB / CacheC、owners: 2 を確認
+・CacheA/user-100 の新規登録は HTTP 201 で成功
+・ALBターゲットも2件 healthy
+・/health の結果から、ALBが2つのnodeへ振り分けていることを確認
+
+問題点
+
+・CacheA/user-100 を登録直後にGETしたところ、key_not_found になった
+・CloudWatch Logsでは、user-100 の cache_get に result=hit と result=miss が混在している
+・つまり、nodeによってデータが取れる場合と取れない場合がある
+・そのため、複数node間でキャッシュデータが共有できていない可能性がある
+
+次に確認すること
+
+・user-100 の cache_put がどのnodeで実行されたか確認する
+・cache_get の hit / miss がそれぞれどのnodeで出ているか整理する

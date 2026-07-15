@@ -18,3 +18,144 @@
 
 ・user-100 の cache_put がどのnodeで実行されたか確認する
 ・cache_get の hit / miss がそれぞれどのnodeで出ているか整理する
+
+
+ログ---他のノードへの通信がタイムアウトしているので、各ノードはシングルトンで動いている。
+2026-07-06T09:00:43.021Z level=WARN logger=org.jgroups.protocols.pbcast.GMS ip-10-0-4-44.ap-northeast-1.compute.internal: JOIN(ip-10-0-4-44.ap-northeast-1.compute.internal) sent to ip-10-0-3-147.ap-northeast-1.compute.internal timed out (after 3000 ms), on try 9
+2026-07-06T09:00:43.021Z level=WARN logger=org.jgroups.protocols.pbcast.GMS ip-10-0-4-44.ap-northeast-1.compute.internal: too many JOIN attempts (10): becoming singleton
+
+メモ
+ALBは2つのnodeへ振り分けている。
+しかし、user-300 は登録されたnodeでは取得できるが、別nodeでは miss になる。
+そのため、少なくとも現時点では、CacheAのデータがnode間で共有されていない。
+→node間でキャッシュデータが共有できていない
+
+
+ECSタスクのログ
+2026-07-15T05:00:31.957Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:31.843Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:31.736Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:31.618Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:31.506Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:31.380Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:31.243Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:31.106Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:30.977Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:30.782Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:30.654Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:30.525Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:30.395Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:30.263Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:30.123Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:29.994Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:29.854Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:29.730Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=hit node=ip-10-0-3-147.ap-northeast-1.compute.internal - -
+2026年7月15日 14:00 2026-07-15T05:00:29.604Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:29.470Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-300 result=miss node=ip-10-0-4-44.ap-northeast-1.compute.internal - - 
+2026年7月15日 14:00 2026-07-15T05:00:15.612Z level=INFO logger=demo.CacheApiController event=cache_put operation=create cache=CacheA key=user-300 result=success node=ip-10-0-3-147.ap-northeast-1.compute.internal
+
+
+調査結果
+
+S3_PING用のS3オブジェクトを確認したところ、2node分の情報は作成されていた。
+ただし、両nodeとも接続先アドレスが `fe80:...%eth1:7800` のIPv6リンクローカルアドレスになっていた。
+
+本来は `10.0.3.147:7800`、`10.0.4.44:7800` のようなIPv4プライベートIPでnode間通信してほしい。
+そのため、S3_PINGによる情報登録はできているが、JGroupsが不適切なアドレスをadvertiseしており、実際のnode間通信が成立していない可能性が高い。
+
+結果として、登録nodeではcache_getがhitするが、別nodeではmissになると考えられる。
+
+
+JGroups/S3_PINGに IPv6リンクローカル fe80... が登録されていた
+↓
+タスク間で正しく通信できず、クラスタが組めていなかった
+↓
+JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true を追加
+↓
+S3_PINGに 10.0.x.x:7800 が登録されるようになった
+↓
+両nodeでキャッシュhit
+
+ログ
+2026年7月15日 18:54
+2026-07-15T09:54:47.807Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.711Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.624Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.535Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.461Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.383Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.286Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.210Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.110Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:47.023Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.945Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.864Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.756Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.659Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.568Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.474Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.378Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.273Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.177Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-4-65.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:46.075Z level=INFO logger=demo.CacheApiController event=cache_get cache=CacheA key=user-500 result=hit node=ip-10-0-3-198.ap-northeast-1.compute.internal
+-
+-
+2026年7月15日 18:54
+2026-07-15T09:54:39.815Z level=INFO logger=demo.CacheApiController event=cache_put operation=create cache=CacheA key=user-500 result=success node=ip-10-0-4-65.ap-northeast-1.compute.internal

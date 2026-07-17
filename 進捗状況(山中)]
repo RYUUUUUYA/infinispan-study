@@ -159,3 +159,34 @@ S3_PINGに 10.0.x.x:7800 が登録されるようになった
 -
 2026年7月15日 18:54
 2026-07-15T09:54:39.815Z level=INFO logger=demo.CacheApiController event=cache_put operation=create cache=CacheA key=user-500 result=success node=ip-10-0-4-65.ap-northeast-1.compute.internal
+
+
+20260717
+進捗
+ECSタスク定義に JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true を追加。
+修正前は S3_PING に fe80... のIPv6リンクローカルアドレスが登録され、
+別nodeで key_not_found が発生していた。
+ECSタスク定義に
+JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true
+を追加した
+修正後は S3_PING に 10.0.x.x:7800 が登録され、
+CacheA/CacheB/CacheC および user-500 version:2 の20回GETで全件取得成功。
+
+ログ
+S3_PINGの修正
+修正前
+ip-10-0-3-147.ap-northeast-1.compute.internal    ...    fe80:...%eth1:7800
+ip-10-0-4-44.ap-northeast-1.compute.internal     ...    fe80:...%eth1:7800
+
+修正後
+ip-10-0-3-198.ap-northeast-1.compute.internal    acf37a2a-31fd-4c89-8b64-2a0069cfa145    10.0.3.198:7800    F
+ip-10-0-4-65.ap-northeast-1.compute.internal     378d6fbd-5e57-4475-86a9-78456cf588b1    10.0.4.65:7800     T
+
+### 更新後の取得確認
+
+CacheA の `user-500` を `version:2` に更新後、20回GETを実行した。
+
+確認結果:
+
+```text
+CacheA user-500 version:2: 20回GET 全件取得成功
